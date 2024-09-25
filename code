@@ -1,0 +1,193 @@
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+from sklearn.metrics import classification_report
+from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df=pd.read_csv('E:\Master\machine learning\exercise\Tree\iris_dataset.csv')
+df.head()
+
+
+df.isnull().sum()
+
+x = df.loc[:, 'sepal_length':'petal_width'].values
+y = df.loc[:, 'species'].values
+
+#samples we have of each species 
+df["species"].value_counts()
+
+sns.FacetGrid(df, hue="species") \
+   .map(plt.scatter, "sepal_length", "sepal_width") \
+   .add_legend();
+
+sns.FacetGrid(df, hue="species") \
+   .map(plt.scatter, "petal_length", "petal_width") \
+   .add_legend();
+#The species are nearly linearly separable with petal size, but sepal sizes are more mixed
+
+sns.swarmplot(x="species", y="petal_length", data=df)
+plt.grid()
+
+sns.pairplot(df, hue="species", diag_kind="hist", size=1.6);
+
+from sklearn.model_selection import train_test_split
+Xtrain, Xtest, Ytrain, Ytest =train_test_split(x , y , test_size = 0.2,random_state=17)
+
+print(Xtrain.shape)
+print(Xtest.shape)
+
+from sklearn.tree import DecisionTreeClassifier
+
+
+DT = DecisionTreeClassifier(random_state=78)
+DT.fit(Xtrain, Ytrain)
+pred = DT.predict(Xtest)
+pred
+
+pred == Ytest
+
+(pred == Ytest).mean()
+# accuracy
+
+
+import matplotlib.pyplot as plt 
+from sklearn import tree 
+plt.figure(figsize=(15, 10)) 
+tree.plot_tree(DT, filled=True) 
+
+from sklearn.datasets import load_iris
+from sklearn import tree
+iris = load_iris()
+X, y = iris.data, iris.target
+dtg = tree.DecisionTreeClassifier()
+dtg = dtg.fit(X, y)
+
+tree.plot_tree(dtg)
+
+import graphviz 
+data = tree.export_graphviz(dtg, out_file=None) 
+graph = graphviz.Source(data) 
+graph.render("iris") 
+
+data = tree.export_graphviz(dtg, out_file=None, 
+                     feature_names=iris.feature_names,  
+                     class_names=iris.target_names,  
+                     filled=True, rounded=True,  
+                     special_characters=True)  
+graph = graphviz.Source(data)  
+graph 
+
+
+from sklearn.datasets import load_iris
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import export_text
+iris = load_iris()
+decision_tree = DecisionTreeClassifier(random_state=0, max_depth=2)
+decision_tree = decision_tree.fit(iris.data, iris.target)
+RDT = export_text(decision_tree, feature_names=iris['feature_names'])
+print(RDT)
+
+feature_names=df.columns.tolist()[:-1]
+target_names=df.columns.tolist()[-1]
+
+
+feature_names
+
+target_names
+
+df.info()
+
+df.describe()
+
+print(classification_report(Ytest,pred))
+
+import os
+
+dt2=DecisionTreeClassifier(random_state=78,criterion='entropy',max_depth=2)
+dt2.fit(Xtrain, Ytrain)
+ypred = dt2.predict(Xtest)
+(ypred == Ytest).mean()
+
+
+dt4=DecisionTreeClassifier(random_state=78,criterion='entropy',max_depth=1)
+dt4.fit(Xtrain, Ytrain)
+ypred = dt4.predict(Xtest)
+(ypred == Ytest).mean()
+
+
+dt2=DecisionTreeClassifier(random_state=78,criterion='gini',max_depth=2)
+dt2.fit(Xtrain, Ytrain)
+ypred = dt2.predict(Xtest)
+(ypred == Ytest).mean()
+
+
+dt2=DecisionTreeClassifier(random_state=78,criterion='gini',max_depth=3)
+dt2.fit(Xtrain, Ytrain)
+ypred = dt2.predict(Xtest)
+(ypred == Ytest).mean()
+
+
+dt3 = DecisionTreeClassifier(criterion = "entropy",
+                            max_depth = 2,
+                            min_samples_split = 5,
+                            min_samples_leaf = 3,
+                            random_state = 78)
+dt3
+dt3.fit(Xtrain, Ytrain)
+ypred = dt3.predict(Xtest)
+(ypred == Ytest).mean()
+
+
+from sklearn.ensemble import RandomForestClassifier
+RF = RandomForestClassifier( random_state=78 )
+RF.fit(Xtrain, Ytrain)
+pred = RF.predict(Xtest)
+acc = accuracy_score(Ytest, pred)
+print(acc)
+
+from sklearn.model_selection import GridSearchCV
+
+grid_search = GridSearchCV(estimator=rf,
+                           param_grid=params,
+                           cv = 4,
+                           n_jobs=-1, verbose=1, scoring="accuracy")
+
+grid_search.fit(Xtrain, Ytrain)
+
+grid_search.best_score_
+
+
+rf_best = grid_search.best_estimator_
+rf_best
+
+from sklearn import metrics
+c45=DecisionTreeClassifier(criterion='entropy',random_state=78)
+c45.fit(Xtrain,Ytrain)
+Ypred=c45.predict(Xtest)
+accuracy=metrics.accuracy_score(Ytest,Ypred)
+accuracy
+
+import wittgenstein as lw
+
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from wittgenstein import RIPPER
+iris = load_iris()
+X = iris.data
+y = iris.target
+y = (y != 0).astype(int)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=17)
+ripper = RIPPER(random_state=78)
+ripper.fit(X_train, y_train)
+print("RIPPER ruleset:")
+for rule in ripper.ruleset_:
+    print(rule)
+y_pred = ripper.predict(X_test)
+from sklearn.metrics import accuracy_score
+accuracy = accuracy_score(y_test, y_pred)
+accuracy
+
+
